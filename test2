@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: manitest
+  name: manitest
+  namespace: manitest
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: manitest
+  template:
+    metadata:
+      labels:
+        app: manitest
+    spec:
+      containers:
+      - name: manitest
+        image: armgnitt/manitest
+        command: [ "/bin/bash", "-c", "--" ]     
+        args: ["cd / && python3 manitest.py"]
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: manitest
+  name: manitest
+  namespace: manitest
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8000
+  selector:
+    app: manitest
